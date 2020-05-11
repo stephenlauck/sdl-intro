@@ -1,12 +1,14 @@
 #include "stdio.h"
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
+#include "SDL2/SDL_mixer.h"
 
 #define WINDOW_WIDTH (640)
 #define WINDOW_HEIGHT (360)
 
 // speed in pixels/second
 #define SPEED (100)
+#define KICK_SOUND "snd/kick.wav"
 
 void sdl_info()
 {
@@ -60,9 +62,24 @@ int main(int argc, char* argv[])
     return 3;
   }
 
+  if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) == -1)
+  {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL Mixer: %s", SDL_GetError());
+    return 3;
+  }
+
   // show SDL info
   sdl_info();
   sdl_gamepad();
+
+  // set up sounds
+  Mix_Chunk *kick = Mix_LoadWAV(KICK_SOUND);
+  if(!kick)
+  {
+    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't Load WAV: %s", SDL_GetError());
+    return 3;
+  }
+
 
   // set up window
   SDL_Window *window;
@@ -132,6 +149,8 @@ int main(int argc, char* argv[])
         case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
           right = 1;
           break;
+        case SDL_CONTROLLER_BUTTON_A:
+          Mix_PlayChannel( -1, kick, 0 ) == -1;
         }
         break;
       case SDL_CONTROLLERBUTTONUP:
@@ -187,6 +206,9 @@ int main(int argc, char* argv[])
   }
 
   // clean up and exit
+  Mix_FreeChunk(kick);
+  Mix_CloseAudio();
+
   SDL_DestroyTexture(texture);
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
