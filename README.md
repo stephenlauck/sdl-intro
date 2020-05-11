@@ -2,7 +2,7 @@
 
 ## Download, Build and Install SDL
 
-Download latest source from [https://www.libsdl.org/download-2.0.php](https://www.libsdl.org/download-2.0.php)
+Download latest source from [https://www.libsdl.org/download-2.0.php]
 
 ```
 mkdir sdl-dev
@@ -46,3 +46,13 @@ int main(int argc, char* argv[])
     return 0;
 }
 ```
+
+### Author
+
+* Stephen Lauck ([stephen.lauck@gmail.com](mailto:stephen.lauck@gmail.com))
+
+### Credits
+
+* Thomas Lively's great CS50 video [https://www.youtube.com/watch?v=yFLa3ln16w0](https://www.youtube.com/watch?v=yFLa3ln16w0)
+
+* Sprite Art [https://opengameart.org/content/lots-of-free-2d-tiles-and-sprites-by-hyptosis](https://opengameart.org/content/lots-of-free-2d-tiles-and-sprites-by-hyptosis)
