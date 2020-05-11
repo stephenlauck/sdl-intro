@@ -22,7 +22,7 @@ sudo make install
 mkdir sdl-intro
 cd sdl-intro
 touch intro.c # paste in code below
-gcc -o bin/intro.out intro.c `sdl2-config --cflags --libs` -lSDL2_image && ./bin/intro.out
+gcc -o bin/intro.out intro.c `sdl2-config --cflags --libs` -lSDL2_image -lSDL2_mixer && ./bin/intro.out
 ./bin/intro.out
 ```
 

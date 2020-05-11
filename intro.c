@@ -8,7 +8,14 @@
 
 // speed in pixels/second
 #define SPEED (100)
+#define BPM (500) // 120 BPM = 1000/2
 #define KICK_SOUND "snd/kick.wav"
+#define HIHAT_SOUND "snd/hihat.wav"
+#define SNARE_SOUND "snd/snare.wav"
+
+Mix_Chunk *kick = NULL;
+Mix_Chunk *hihat = NULL;
+Mix_Chunk *snare = NULL;
 
 void sdl_info()
 {
@@ -53,6 +60,57 @@ void sdl_gamepad()
   }
 }
 
+void sound_setup( )
+{
+   // set up sounds
+  kick = Mix_LoadWAV(KICK_SOUND);
+  if(!kick)
+  {
+    printf("Mix_LoadWAV: %s\n", Mix_GetError());
+    // handle error
+  }
+
+  hihat = Mix_LoadWAV( "snd/hihat.wav" );
+    if( !hihat )
+    {
+      printf("Mix_LoadWAV: %s\n", Mix_GetError());
+      // handle error
+    }
+
+  snare = Mix_LoadWAV( "snd/snare.wav" );
+    if( !hihat )
+    {
+      printf("Mix_LoadWAV: %s\n", Mix_GetError());
+      // handle error
+    }
+}
+
+void play_hihat()
+{
+  Mix_PlayChannel( -1, hihat, 0 );
+}
+
+Uint32 callback( Uint32 interval, void* param )
+{
+  SDL_Event event;
+  SDL_UserEvent userevent;
+
+  /* In this example, our callback pushes a function
+  into the queue, and causes our callback to be called again at the
+  same interval: */
+
+  userevent.type = SDL_USEREVENT;
+  userevent.code = 0;
+  userevent.data1 = &play_hihat;
+  userevent.data2 = NULL;
+
+  event.type = SDL_USEREVENT;
+  event.user = userevent;
+
+  SDL_PushEvent(&event);
+  return(interval);
+}
+
 int main(int argc, char* argv[])
 {
   // initialize SDL
@@ -72,20 +130,16 @@ int main(int argc, char* argv[])
   sdl_info();
   sdl_gamepad();
 
-  // set up sounds
-  Mix_Chunk *kick = Mix_LoadWAV(KICK_SOUND);
-  if(!kick)
-  {
-    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't Load WAV: %s", SDL_GetError());
-    return 3;
-  }
-
-
+  // set up sound
+  sound_setup();
+  SDL_TimerID timerID = SDL_AddTimer( BPM, callback, hihat );
+  
   // set up window
   SDL_Window *window;
   SDL_Renderer *renderer;
   SDL_Surface *surface;
   SDL_Texture *texture;
+  SDL_Event event;
 
 
   if (SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
@@ -124,16 +178,28 @@ int main(int argc, char* argv[])
 
   int quit = 0;
 
+  
+
   while (!quit) {
-    
-    SDL_Event event;
     while (SDL_PollEvent(&event))
     {
       switch (event.type)
       {
+      case SDL_USEREVENT: {
+        void (*p) (void*) = event.user.data1;
+        p(event.user.data2);
+        break;
+      }
       case SDL_QUIT:
         quit = 1;
         break;
+      case SDL_KEYDOWN:
+      switch (event.key.keysym.scancode)
+      {
+      case SDL_SCANCODE_ESCAPE:
+        quit = 1;
+        break;
+      }
       case SDL_CONTROLLERBUTTONDOWN:
         switch ( event.cbutton.button )
         {
@@ -150,7 +216,11 @@ int main(int argc, char* argv[])
           right = 1;
           break;
         case SDL_CONTROLLER_BUTTON_A:
-          Mix_PlayChannel( -1, kick, 0 ) == -1;
+          Mix_PlayChannel( -1, kick, 0 );
+          break;
+        case SDL_CONTROLLER_BUTTON_B:
+          Mix_PlayChannel( -1, snare, 0 );
+          break;
         }
         break;
       case SDL_CONTROLLERBUTTONUP:
@@ -206,6 +276,8 @@ int main(int argc, char* argv[])
   }
 
   // clean up and exit
+  SDL_RemoveTimer( timerID );
+  
   Mix_FreeChunk(kick);
   Mix_CloseAudio();
 
