@@ -7,7 +7,7 @@
 #define WINDOW_HEIGHT (360)
 
 // speed in pixels/second
-#define SPEED (100)
+#define SPEED (300)
 #define BPM (500) // 120 BPM = 1000/2
 #define KICK_SOUND "snd/kick.wav"
 #define HIHAT_SOUND "snd/hihat.wav"
