@@ -47,6 +47,12 @@ int main(int argc, char* argv[])
 }
 ```
 
+## Retropie Deployment
+
+[https://retropie.github.io/RetroPie-Docs/Ports/#installing-ports-from-apt-get](https://retropie.github.io/RetroPie-Docs/Ports/#installing-ports-from-apt-get)
+
+Retroarch [https://www.retroarch.com/](https://www.retroarch.com/)
+
 ### Author
 
 * Stephen Lauck ([stephen.lauck@gmail.com](mailto:stephen.lauck@gmail.com))
